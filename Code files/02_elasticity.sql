@@ -1,14 +1,10 @@
--- ============================================================
--- 02_ELASTICITY.SQL
--- PriceSense (simplified pipeline)
--- ============================================================
 -- Per-product price elasticity of demand (PED), using a robust
 -- log-log arc-elasticity method. This is the one piece of real
 -- statistical modeling in the project, so it's kept in full —
 -- but computed ONCE and saved as a table, instead of being
 -- copy-pasted again inside the recommendation engine.
 --
--- METHOD (why each step exists):
+-- METHOD 
 --   1. Trim each product's price to its 5th-95th percentile.
 --      Removes bundle/data-entry outliers that don't reflect a
 --      real pricing decision.
@@ -23,7 +19,6 @@
 --      many orders were behind each step (sparser steps count less).
 --   6. Clamp the result to [-3, 3] — anything beyond that is noise,
 --      not a real consumer elasticity.
--- ============================================================
 
 CREATE OR REPLACE TABLE product_elasticity AS
 WITH
@@ -78,7 +73,7 @@ JOIN (
 WHERE s.step_elasticity IS NOT NULL
 GROUP BY s.product_id, s.category, m.avg_price, m.total_revenue, m.total_units;
 
--- Quick look: which products/categories are most price-sensitive
+-- check: which products/categories are most price-sensitive
 SELECT
     product_id, category, elasticity,
     CASE

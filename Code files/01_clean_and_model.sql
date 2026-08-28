@@ -1,13 +1,3 @@
--- ============================================================
--- 01_CLEAN_AND_MODEL.SQL
--- PriceSense (simplified pipeline)
--- ============================================================
--- Cleans the 5 raw tables and builds the single "master_view"
--- that every downstream file reads from. This replaces the old
--- 01_data_cleaning.sql + 02_data_model.sql (merged: the cleaning
--- rules and the join were always two halves of one step).
--- ============================================================
-
 -- 1. Transactions: drop duplicate order_ids, refunds (negative
 --    price/qty), and extreme outliers (>5000, a data-entry error).
 CREATE OR REPLACE VIEW clean_transactions AS
@@ -69,9 +59,7 @@ FROM competitor_pricing
 WHERE price IS NOT NULL AND price > 0
 GROUP BY competitor_product_id;
 
--- ============================================================
 -- MASTER VIEW — every downstream file reads only this.
--- ============================================================
 CREATE OR REPLACE VIEW master_view AS
 SELECT
     t.order_id, t.user_id, t.product_id, t.price, t.quantity,

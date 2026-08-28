@@ -1,18 +1,3 @@
--- ============================================================
--- 03_INSIGHTS.SQL
--- PriceSense (simplified pipeline)
--- ============================================================
--- The old pipeline had 10 separate files (03-12) exploring
--- product performance, price buckets, demand curves, customer
--- segments, premium tolerance, trends, geography, occasions,
--- and competitors — each with 2-4 queries, ~2,000 lines total.
--- None of that output actually fed the recommendation engine;
--- it was exploratory. This file keeps the one genuinely useful
--- query from each theme, condensed. Nothing here is required by
--- 04_recommendation_engine.sql — run it only if you want the
--- supporting context.
--- ============================================================
-
 -- Category performance: revenue, orders, and average price per category
 SELECT category,
        COUNT(DISTINCT order_id)   AS orders,

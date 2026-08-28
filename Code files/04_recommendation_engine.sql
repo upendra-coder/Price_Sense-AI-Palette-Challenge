@@ -1,12 +1,3 @@
--- ============================================================
--- 04_RECOMMENDATION_ENGINE.SQL
--- PriceSense (simplified pipeline)
--- ============================================================
--- Turns elasticity + a few context signals into a per-product
--- price recommendation. Reads product_elasticity as a table
--- (built once in 02_elasticity.sql) instead of recomputing it —
--- the old version duplicated the whole elasticity CTE chain here.
---
 -- LOGIC:
 --   1. Base adjustment comes from elasticity:
 --        inelastic        -> raise up to 10%
@@ -21,7 +12,6 @@
 --      the prior $10 band) caps how high we'll recommend going.
 --   5. Revenue/volume impact projected from elasticity:
 --        Q_new = Q_old * (1 + elasticity * pct_price_change)
--- ============================================================
 
 WITH
 current_metrics AS (
@@ -36,6 +26,7 @@ current_metrics AS (
 -- Demand cliff: first $10 price band where volume drops >25%
 -- vs. the previous band (using $10 bands, not $1, so each band
 -- has enough orders to be meaningful).
+
 cliff_bands AS (
     SELECT product_id, FLOOR(price / 10) * 10 AS price_band,
            SUM(quantity) AS band_qty

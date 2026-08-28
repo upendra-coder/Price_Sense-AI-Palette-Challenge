@@ -6,24 +6,15 @@ revenue impact.
 
 ## What changed from the original
 
-The original had 14 SQL files (~3,200 lines). Digging into it, only 4 of those
-files actually fed the final output — the other 10 were exploratory queries
-(price buckets, demand curves, segments, premium tolerance, trends, geography,
-occasions, competitors) that printed results but were never read by anything
-downstream. On top of that, the recommendation engine re-derived the entire
-elasticity calculation from scratch instead of reusing it.
-
-This version keeps every idea that actually mattered and cuts the duplication:
 
 | File | What it does |
 |---|---|
 | `01_clean_and_model.sql` | Cleans the 5 raw tables and builds `master_view`, the single joined view everything else reads from. |
 | `02_elasticity.sql` | The real modeling step: per-product price elasticity of demand, using outlier-trimmed, quantile-banded, log-log arc elasticity — saved as a **table** so it's computed once. |
-| `03_insights.sql` | One useful query per theme from the old 10 exploratory files (category performance, persona spend, geography, occasions, competitor benchmark), condensed. Optional — nothing downstream depends on it. |
+| `03_insights.sql` | One useful query per theme (category performance, persona spend, geography, occasions, competitor benchmark), condensed. |
 | `04_recommendation_engine.sql` | Reads the elasticity table (doesn't recompute it), applies a demand-cliff cap and a few additive context bonuses, and outputs a recommended price with projected revenue/volume impact. |
 
-~3,200 lines of SQL → ~450 lines, with the actual modeling logic (elasticity
-methodology, demand-cliff detection, additive adjustment engine) unchanged.
+
 
 ## Running it
 
